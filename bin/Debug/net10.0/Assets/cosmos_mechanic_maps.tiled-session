@@ -1,0 +1,56 @@
+{
+    "activeFile": "Maps/cockpit.tmx",
+    "expandedProjectPaths": [
+        ".",
+        "Maps"
+    ],
+    "fileStates": {
+        "Maps/cockpit.tmx": {
+            "scale": 0.6283854166666667,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 1129.8798176543721,
+                "y": 529.1338582677165
+            }
+        },
+        "Maps/objects_cosmos_mechanic.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "Maps/tiles_cosmos_mechanic.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "objects_cosmos_mechanic.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "tiles_cosmos_mechanic.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        }
+    },
+    "last.externalTilesetPath": "/home/A/documents/game_dev/cosmos_mechanic/Assets/Maps",
+    "last.imagePath": "/home/A/documents/game_dev/cosmos_mechanic/Assets/tiles/png",
+    "map.height": 34,
+    "map.lastUsedFormat": "tmx",
+    "map.width": 60,
+    "openFiles": [
+        "Maps/cockpit.tmx"
+    ],
+    "project": "cosmos_mechanic_maps.tiled-project",
+    "recentFiles": [
+        "Maps/cockpit.tmx",
+        "Maps/objects_cosmos_mechanic.tsx",
+        "Maps/tiles_cosmos_mechanic.tsx",
+        "objects_cosmos_mechanic.tsx",
+        "tiles_cosmos_mechanic.tsx"
+    ],
+    "tileset.lastUsedFilter": "All Files (*)",
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.type": 0
+}
