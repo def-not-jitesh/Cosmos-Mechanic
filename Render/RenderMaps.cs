@@ -3,14 +3,13 @@
  * but the object tilsets are a collection of images of different sizes */	
 
 /* the cell will be rendered according to which tileset it belongs
- * the normal tileset has a image child, which the object tileset does not */
+ * the normal tileset has a single image child, while the object tileset does not */
 					
 using System; 
 using System.Collections.Generic;
 using System.Xml; 
 using System.Text.RegularExpressions; 
 using System.Numerics; 
-using System.Linq; 
 using System.IO; 
 using Raylib_cs; 
 using static Raylib_cs.Raylib; 
@@ -29,7 +28,7 @@ public class Map {
 		public XmlNode root; 
 		public Texture2D texture; // for normal tilesets 
 		public List<Texture2D> objectImageTextures; // for object tilesets
-		public List<(int imageWidth, int imageHeight)> objectImageSizes; // size for every image in object tilesets	
+		public List<(int imageWidth, int imageHeight)> objectImageSizes; // size for every image in object tilesets
 	}; 
 
 	Dictionary<string, Tileset> sourceTilesetMap = new Dictionary<string, Tileset>();
@@ -189,4 +188,3 @@ public class Map {
 		} 
 	}
 }; 
-

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("cosmos_mechanic")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b3a7a45e8b1421c916154e0c201fd3c203c8253a")]
 [assembly: System.Reflection.AssemblyProductAttribute("cosmos_mechanic")]
 [assembly: System.Reflection.AssemblyTitleAttribute("cosmos_mechanic")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

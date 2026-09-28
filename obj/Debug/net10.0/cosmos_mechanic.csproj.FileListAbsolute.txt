@@ -107,3 +107,4 @@
 /home/A/documents/game_dev/cosmos_mechanic/bin/Debug/net10.0/runtimes/win-x64/native/raylib.dll
 /home/A/documents/game_dev/cosmos_mechanic/bin/Debug/net10.0/runtimes/win-x86/native/raylib.dll
 /home/A/documents/game_dev/cosmos_mechanic/obj/Debug/net10.0/cosmos_m.C28CBB01.Up2Date
+/home/A/documents/game_dev/cosmos_mechanic/obj/Debug/net10.0/cosmos_mechanic.sourcelink.json
