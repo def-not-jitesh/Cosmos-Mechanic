@@ -42,9 +42,7 @@ public class Idle : IPlayerState {
 			new Rectangle(player.position.X, player.position.Y, player.size.X * player.scalePlayer, player.size.Y * player.scalePlayer),
 			new Vector2(0f, 0f), 0f, Color.White); 
 
-		if (player.currentFrameCount >= player.stateFrameCount[Player.PlayerActions.Idle])
-			player.currentFrameCount = 0;
-		else player.currentFrameCount++; 
+		if (player.currentFrameCount >= player.stateFrameCount[Player.PlayerActions.Idle]) player.currentFrameCount = 0;
 	}
 }
 
@@ -75,7 +73,7 @@ public class Run : IPlayerState {
 			if (player.currentFrameCount >= player.stateFrameCount[Player.PlayerActions.Jump]) {
 				player.currentFrameCount = 0;
 				player.state = new Idle();
-			} else player.currentFrameCount++;
+			}
 
 			return; 
 		}
@@ -90,7 +88,7 @@ public class Run : IPlayerState {
 		if (player.currentFrameCount >= player.stateFrameCount[Player.PlayerActions.Run]) {
 			player.currentFrameCount = 0;
 			player.state = new Idle(); 
-		} else player.currentFrameCount++; 
+		}
 	}
 }
 
@@ -128,7 +126,7 @@ public class Jump : IPlayerState {
 		if (player.currentFrameCount >= player.stateFrameCount[Player.PlayerActions.Jump]) {
 			player.currentFrameCount = 0; 
 			player.state = new Idle(); 
-		} else player.currentFrameCount++; 
+		}
 	}
 }
 
@@ -148,7 +146,7 @@ public class Death : IPlayerState {
 			player.currentFrameCount = 0; 
 			player.isDead = true; 
 			Logger.Log(GameSystems.Player, "player is dead"); 
-		} else player.currentFrameCount++; 
+		}
 	}
 }
 
@@ -174,8 +172,8 @@ public class Player {
 		public float Y; 
 	}
 
-	public bool isDead = false; 
 	public IPlayerState state; 
+	public bool isDead = false; 
 	public int direction = 1; // to flip the image  
 	public int gravityDirection = 1; // 1 means gravity, -1 means anti-gravity
 	public int currentFrameCount; 
@@ -183,6 +181,7 @@ public class Player {
 	public float velocity;
 	public float jumpVelocity;
 	public float dy; 
+	public float frameTimeCount;
 	public bool onGround; 
 
 	public Position position; 
@@ -200,7 +199,7 @@ public class Player {
 		velocity = 10f; 
 		onGround = true;
 		jumpVelocity = 5f; 
-		scalePlayer = 2f;  
+		scalePlayer = 3f;  
 
 		stateFrameCount = new Dictionary<PlayerActions, int>(); 
 		stateFrameCount.Add(PlayerActions.Idle, 4); 
@@ -251,6 +250,13 @@ public class Player {
 
 	public void update(float deltaTime) {
 		if (onGround) dy = 0f; 
+
+		frameTimeCount += deltaTime; 
+		if (frameTimeCount >= Constants.frameTime) {
+			currentFrameCount++; 
+			frameTimeCount = 0f;
+		}
+
 		state.update(this, deltaTime); 
 	}
 }

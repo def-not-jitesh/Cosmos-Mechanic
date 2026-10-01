@@ -8,6 +8,7 @@ public static class Constants {
 	public const int tileCountColumn = 34; 
 
 	public const float gravity = 9.8f; 
+	public const float frameTime = 0.05f; 
 
 	public enum Room {
 		cockpit, 
