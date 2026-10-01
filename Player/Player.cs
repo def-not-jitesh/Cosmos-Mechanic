@@ -181,8 +181,9 @@ public class Player {
 	public float velocity;
 	public float jumpVelocity;
 	public float dy; 
-	public float frameTimeCount;
 	public bool onGround; 
+	public float frameTimeCount;
+	public float gravitySwitchCount; 
 
 	public Position position; 
 	public Size size; 
@@ -200,6 +201,7 @@ public class Player {
 		onGround = true;
 		jumpVelocity = 5f; 
 		scalePlayer = 3f;  
+		gravitySwitchCount = 0.3f; 
 
 		stateFrameCount = new Dictionary<PlayerActions, int>(); 
 		stateFrameCount.Add(PlayerActions.Idle, 4); 
@@ -220,9 +222,12 @@ public class Player {
 	public void onInput(object sender, PlayerActions e) {
 		switch (e) {
 			case PlayerActions.SwitchGravity:
-				gravityDirection = -gravityDirection; 
-				if (gravityDirection > 0) Logger.Log(GameSystems.Player, "normal gravity state"); 
-				else Logger.Log(GameSystems.Player, "anti-gravity state"); 
+				if (gravitySwitchCount <= 0f) {
+					gravityDirection = -gravityDirection; 
+					gravitySwitchCount = 0.3f; 
+					if (gravityDirection > 0) Logger.Log(GameSystems.Player, "normal gravity state");
+					else Logger.Log(GameSystems.Player, "anti-gravity state"); 
+				}
 				// play the animation
 				break; 
 			case PlayerActions.FaceLeft:
@@ -252,6 +257,7 @@ public class Player {
 		if (onGround) dy = 0f; 
 
 		frameTimeCount += deltaTime; 
+		gravitySwitchCount -= deltaTime; 
 		if (frameTimeCount >= Constants.frameTime) {
 			currentFrameCount++; 
 			frameTimeCount = 0f;
