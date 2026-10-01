@@ -31,15 +31,17 @@ public class Map {
 		public List<(int imageWidth, int imageHeight)> objectImageSizes; // size for every image in object tilesets
 	}; 
 
-	Dictionary<string, Tileset> sourceTilesetMap = new Dictionary<string, Tileset>();
-      	Dictionary<int, string> curGIDSourceMap = new Dictionary<int, string>(); 	
-	List<int> curTilesetGIDs = new List<int>(); 
+	Dictionary<string, Tileset> sourceTilesetMap;
+    Dictionary<int, string> curGIDSourceMap; 	
+	List<int> curTilesetGIDs; 
 	XmlNode curRootNode; 
 
-	public Map() {}
+	public Map() {
+		sourceTilesetMap = new Dictionary<string, Tileset>(); 
+		curGIDSourceMap = new Dictionary<int, string>(); 
+		curTilesetGIDs = new List<int>(); 
 
-	public void init() {
-	 	for (int sourceIndex = 0; sourceIndex < Utils.tilesetSourceFiles.Count; sourceIndex++) {
+		for (int sourceIndex = 0; sourceIndex < Utils.tilesetSourceFiles.Count; sourceIndex++) {
 			XmlDocument curDoc = new XmlDocument(); 
 			try { curDoc.Load(Path.Combine(Utils.basePath, "Assets", "Maps", Utils.tilesetSourceFiles[sourceIndex])); }
 			catch (System.IO.FileNotFoundException) {
@@ -96,6 +98,7 @@ public class Map {
 
 			sourceTilesetMap.Add(Utils.tilesetSourceFiles[sourceIndex], curTileset); 
 		}
+
 	}
 
 	public void LoadMap(Constants.Room map) {
@@ -115,7 +118,6 @@ public class Map {
 				curTilesetGIDs.Add(int.Parse(curRootNode.ChildNodes[i].Attributes[0].Value)); 
 			}
 		}
-
 	}
 	
 	public void update() {

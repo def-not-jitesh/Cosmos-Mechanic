@@ -7,6 +7,8 @@ public static class Constants {
 	public const int tileCountRow = 60; 
 	public const int tileCountColumn = 34; 
 
+	public const float gravity = 9.8f; 
+
 	public enum Room {
 		cockpit, 
 		utility, 

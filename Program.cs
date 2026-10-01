@@ -5,27 +5,35 @@ using static Raylib_cs.Raylib;
 using Game.Core; 
 using Game.Render; 
 using Game.Utility; 
+using Game.Character; 
 
 public class CosmosMechanic {
+
+	private bool playerDead = false; 
+
 	public static void Main() {
 		InitWindow(Utils.screenWidth, Utils.screenHeight, "cosmos mechanic"); 
 		SetTargetFPS(60); 
 
 		// initialize objects 
 		Utils.init(); 
-		InputHandler inputHandler = new InputHandler(); 
-		Map map = new Map(); 	
-		map.init(); 
+		Logger.Enable(GameSystems.Player); 
+		Player player = new Player(); 
+		Map map = new Map(); 
 		map.LoadMap(Constants.Room.cockpit);
 
 		// subscribe to events 
+		InputHandler.InputEvent += player.onInput; 
 		
-		while (!WindowShouldClose()) {
+		
+		while (!WindowShouldClose() && !player.isDead) {
+			float deltaTime = GetFrameTime();
 			BeginDrawing(); 
 			ClearBackground(Color.Black); 
 			
 			InputHandler.update(); 
 			map.update(); 
+			player.update(deltaTime); 
 
 			EndDrawing(); 
 		}

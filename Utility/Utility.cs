@@ -5,16 +5,6 @@ namespace Game.Utility;
 
 public static class Utils {
 
-	enum GameActions { 
-		moveRight, 
-		moveLeft, 
-		Attack, 
-		RunRight, 
-		RunLeft, 
-		Jump, 
-		AntiGravity 
-	}
-	 
 	public static string basePath = AppContext.BaseDirectory; 
 	public static Dictionary<Constants.Room, string> roomMapSourceFile = new Dictionary<Constants.Room, string>(); 
 	public static List<string> tilesetSourceFiles = new List<string>(); 
