@@ -22,4 +22,5 @@ public static class Logger {
 
     public static void Enable(GameSystems system) { logSystem[system] = true; }
     public static void Disable(GameSystems system) { logSystem[system] = false; }
+    public static bool CheckEnable(GameSystems system) { return logSystem[system]; }
 }

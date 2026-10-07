@@ -162,16 +162,6 @@ public class Player {
 		SwitchGravity
 	}
 	
-	public struct Position {
-		public float X; 
-		public float Y; 
-	}
-
-	public struct Size {
-		public float X; 
-		public float Y; 
-	}
-
 	public IPlayerState state; 
 	public bool isDead = false; 
 	public int direction = 1; // to flip the image  
@@ -185,8 +175,8 @@ public class Player {
 	public float frameTimeCount;
 	public float gravitySwitchCount; 
 
-	public Position position; 
-	public Size size; 
+	public Vector2 position; 
+	public Vector2 size; 
 
 	public Dictionary<PlayerActions, int> stateFrameCount; 
 	public Dictionary<PlayerActions, Texture2D> stateTexture; 

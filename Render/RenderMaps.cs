@@ -4,7 +4,11 @@
 
 /* the cell will be rendered according to which tileset it belongs
  * the normal tileset has a single image child, while the object tileset does not */
-					
+
+/* every geometry is basically a rectangle which has some starting point.
+	maybe what kind of tileset or asset it uses has some significance in the future, 
+	which is why every geometry has a GeometryType field. */
+
 using System; 
 using System.Collections.Generic;
 using System.Xml; 
@@ -15,11 +19,20 @@ using Raylib_cs;
 using static Raylib_cs.Raylib; 
 
 using Game.Utility; 
+using Game.Core; 
 
 namespace Game.Render; 
 
 public class Map {
-	
+
+	enum GeometryType {
+		Platform, 
+		Switch, 
+		Door, 
+		Lava,
+		Spike
+	}
+
 	struct Tileset {
 		public int rows; 
 		public int columns; 
@@ -31,15 +44,25 @@ public class Map {
 		public List<(int imageWidth, int imageHeight)> objectImageSizes; // size for every image in object tilesets
 	}; 
 
+	struct Geometry {
+		public int row; 
+		public int column; 
+		public int length; 
+		public int height; 
+		public GeometryType type;
+	}
+
 	Dictionary<string, Tileset> sourceTilesetMap;
     Dictionary<int, string> curGIDSourceMap; 	
 	List<int> curTilesetGIDs; 
+	List<GeometryType> curGeometry;
 	XmlNode curRootNode; 
 
 	public Map() {
 		sourceTilesetMap = new Dictionary<string, Tileset>(); 
 		curGIDSourceMap = new Dictionary<int, string>(); 
 		curTilesetGIDs = new List<int>(); 
+		curGeometry = new List<GeometryType>(); 
 
 		for (int sourceIndex = 0; sourceIndex < Utils.tilesetSourceFiles.Count; sourceIndex++) {
 			XmlDocument curDoc = new XmlDocument(); 
@@ -99,6 +122,7 @@ public class Map {
 			sourceTilesetMap.Add(Utils.tilesetSourceFiles[sourceIndex], curTileset); 
 		}
 
+		Logger.Log(GameSystems.Renderer, "all tilesets are loaded"); 
 	}
 
 	public void LoadMap(Constants.Room map) {
@@ -111,15 +135,89 @@ public class Map {
 		
 		curRootNode = doc.DocumentElement; 
 
-		for (int i = 0; i < curRootNode.ChildNodes.Count; i++) {
-			if (curRootNode.ChildNodes[i].Name == "tileset") {
-				string source = curRootNode.ChildNodes[i].Attributes[1].Value;
-				curGIDSourceMap.Add(int.Parse(curRootNode.ChildNodes[i].Attributes[0].Value), source); 
-				curTilesetGIDs.Add(int.Parse(curRootNode.ChildNodes[i].Attributes[0].Value)); 
+		for (int childIndex = 0; childIndex < curRootNode.ChildNodes.Count; childIndex++) {
+			if (curRootNode.ChildNodes[childIndex].Name == "tileset") {
+				string source = curRootNode.ChildNodes[childIndex].Attributes[1].Value;
+				curGIDSourceMap.Add(int.Parse(curRootNode.ChildNodes[childIndex].Attributes[0].Value), source); 
+				curTilesetGIDs.Add(int.Parse(curRootNode.ChildNodes[childIndex].Attributes[0].Value)); 
+			}
+		}
+
+		Logger.Log(GameSystems.Renderer, $"{Utils.roomMapSourceFile[map]} is the current loaded map");
+	}
+	
+	void loadMapGeometry() {
+		for (int childIndex = 0; childIndex < curRootNode.ChildNodes.Count; childIndex++) {
+			if (curRootNode.ChildNodes[childIndex].Name == "geometry") {
+				string source = curRootNode.ChildNodes[childIndex].Attributes[0].Value; 
+				break; 
+			}
+		}
+
+		XmlDocument geometryDoc = new XmlDocument(); 
+		try { geometryDoc.Load(Path.Combine(Utils.basePath, "Assets", "MapGeometry", source)); } 
+		catch (System.IO.FileNotFoundException) {
+			Console.WriteLine(source + ": file not found"); 
+		}
+
+		rootNode = geometryDoc.DocumentElement; 
+
+		for (int childIndex = 0; childIndex < rootNode.ChildNodes.Count; childIndex++) {
+			Geometry geometry = new Geometry(); 
+            // the attributes are always in the same order for a geometry 
+			if (rootNode.ChildNodes[childIndex].Attributes[0] == "platform") {
+				geometry.type = GeometryType.Platform;
+				int tileNumber = int.Parse(rootNode.ChildNodes[childIndex].Attributes[1]); 
+				geometry.column = tileNumber % Constants.tileCountRow; 
+				geometry.row = tileNumber / Constants.tileCountRow; 
+				geometry.length = int.Parse(rootNode.ChildNodes[childIndex].Attributes[2]); 
+				geometry.height = int.Parse(rootNode.ChildNodes[childIndex].Attributes[3]); 
+			}
+
+			if (rootNode.ChildNodes[childIndex].Attributes[0] == "object") {
+				switch (rootNode.ChildNodes[childIndex].Attributes[1]) {
+					case "switch":
+						geometry.type = GeometryType.Switch;
+						break; 
+					case "door":
+						geometry.type = GeometryType.Door;
+						break; 
+					case "spike":
+						geometry.type = GeometryType.Spike;
+						break; 
+					case "lava":
+						geometry.type = GeometryType.Lava;
+						break; 
+				}
+
+				int tileNumber = int.Parse(rootNode.ChildNodes[childIndex].Attributes[2]); 
+				geometry.column = tileNumber % Constants.tileCountRow; 
+				geometry.row = tileNumber / Constants.tileCountRow; 
+				geometry.length = int.Parse(rootNode.ChildNodes[childIndex].Attributes[3]); 
+				geometry.height = int.Parse(rootNode.ChildNodes[childIndex].Attributes[4]); 
+			}
+
+			curGeometry.Add(geometry); 
+		}
+	}
+
+	void renderGeometry() {
+		for (int geometryIndex = 0; geometryIndex < curGeometry.Count; geometryIndex++) {
+			if (curGeometry[geometryIndex].type == GameSystems.Platform) {
+				DrawRectangle(curGeometry[geometryIndex].column * Utils.screenWidth/Constants.tileCountRow; 
+				curGeometry[geometryIndex].row * Utils.screenHeight/Constants.tileCountColumn, 
+				curGeometry[geometryIndex].length, curGeometry[geometryIndex].height, Color.Red); 
+				Logger.Log(GameSystems.Renderer, "platform geometry collision rectangle drawn"); 
+
+			} else {
+				DrawRectangle(curGeometry[geometryIndex].column * Utils.screenWidth/Constants.tileCountRow, 
+				(curGeometry[geometryIndex].row * Utils.screenHeight/Constants.tileCountColumn) + Utils.screenHeight/Constants.tileCountColumn - curGeometry[geometryIndex].height,
+				curGeometry[geometryIndex].length, curGeometry[geometryIndex].height, Color.Red);
+				Logger.Log(GameSystems.Renderer, "object geometry collision rectangle drawn"); 
 			}
 		}
 	}
-	
+
 	public void update() {
 		for (int i = 0; i < curRootNode.ChildNodes.Count; i++) {
 			if (curRootNode.ChildNodes[i].Name == "layer") {
@@ -165,6 +263,7 @@ public class Map {
 									new Vector2(0, 0), 
 									0f, 
 									Color.White);
+							
 						} else {
 							
 							float destX = colScreen * Utils.screenWidth/Constants.tileCountRow; 
@@ -187,6 +286,10 @@ public class Map {
 					layerIndex++; 
 				}
 			}
+		} 
+
+		if (Logger.CheckEnable(GameSystems.Renderer)) {
+			renderGeometry(); 
 		} 
 	}
 }; 
