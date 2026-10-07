@@ -52,17 +52,20 @@ public class Map {
 		public GeometryType type;
 	}
 
-	Dictionary<string, Tileset> sourceTilesetMap;
+	// needed at the start of the game 
+	Dictionary<string, Tileset> sourceTilesetMap; 
+
+	// changed after a new map is loaded
     Dictionary<int, string> curGIDSourceMap; 	
 	List<int> curTilesetGIDs; 
-	List<GeometryType> curGeometry;
+	List<Geometry> curGeometry;
 	XmlNode curRootNode; 
 
 	public Map() {
 		sourceTilesetMap = new Dictionary<string, Tileset>(); 
 		curGIDSourceMap = new Dictionary<int, string>(); 
 		curTilesetGIDs = new List<int>(); 
-		curGeometry = new List<GeometryType>(); 
+		curGeometry = new List<Geometry>(); 
 
 		for (int sourceIndex = 0; sourceIndex < Utils.tilesetSourceFiles.Count; sourceIndex++) {
 			XmlDocument curDoc = new XmlDocument(); 
@@ -96,7 +99,7 @@ public class Map {
 				string tilesetSource = curRoot.ChildNodes[0].Attributes[0].Value; 
 				string trimmedSource = Regex.Replace(tilesetSource, @"^\.\./", ""); 
 				string[] tile_parts = trimmedSource.Split('/');
-			       	tile_parts = tile_parts.Prepend("Assets").ToArray(); 
+			    tile_parts = tile_parts.Prepend("Assets").ToArray(); 
 				tile_parts = tile_parts.Prepend(Utils.basePath).ToArray();
 
 				curTileset.texture = LoadTexture(Path.Combine(tile_parts)); 
@@ -126,6 +129,10 @@ public class Map {
 	}
 
 	public void LoadMap(Constants.Room map) {
+		curGIDSourceMap.Clear(); 
+		curTilesetGIDs.Clear(); 
+		curGeometry.Clear(); 
+
 		string path = Path.Combine(Utils.basePath, "Assets", "Maps", Utils.roomMapSourceFile[map]); 
 		XmlDocument doc = new XmlDocument(); 
 		try { doc.Load(path); }
@@ -144,12 +151,15 @@ public class Map {
 		}
 
 		Logger.Log(GameSystems.Renderer, $"{Utils.roomMapSourceFile[map]} is the current loaded map");
+
+		loadMapGeometry(); 
 	}
 	
 	void loadMapGeometry() {
+		string source = "";
 		for (int childIndex = 0; childIndex < curRootNode.ChildNodes.Count; childIndex++) {
 			if (curRootNode.ChildNodes[childIndex].Name == "geometry") {
-				string source = curRootNode.ChildNodes[childIndex].Attributes[0].Value; 
+				source = curRootNode.ChildNodes[childIndex].Attributes[0].Value; 
 				break; 
 			}
 		}
@@ -160,22 +170,22 @@ public class Map {
 			Console.WriteLine(source + ": file not found"); 
 		}
 
-		rootNode = geometryDoc.DocumentElement; 
+		XmlNode rootNode = geometryDoc.DocumentElement; 
 
 		for (int childIndex = 0; childIndex < rootNode.ChildNodes.Count; childIndex++) {
 			Geometry geometry = new Geometry(); 
             // the attributes are always in the same order for a geometry 
-			if (rootNode.ChildNodes[childIndex].Attributes[0] == "platform") {
+			if (rootNode.ChildNodes[childIndex].Attributes[0].Value == "platform") {
 				geometry.type = GeometryType.Platform;
-				int tileNumber = int.Parse(rootNode.ChildNodes[childIndex].Attributes[1]); 
+				int tileNumber = int.Parse(rootNode.ChildNodes[childIndex].Attributes[1].Value); 
 				geometry.column = tileNumber % Constants.tileCountRow; 
 				geometry.row = tileNumber / Constants.tileCountRow; 
-				geometry.length = int.Parse(rootNode.ChildNodes[childIndex].Attributes[2]); 
-				geometry.height = int.Parse(rootNode.ChildNodes[childIndex].Attributes[3]); 
+				geometry.length = int.Parse(rootNode.ChildNodes[childIndex].Attributes[2].Value); 
+				geometry.height = int.Parse(rootNode.ChildNodes[childIndex].Attributes[3].Value); 
 			}
 
-			if (rootNode.ChildNodes[childIndex].Attributes[0] == "object") {
-				switch (rootNode.ChildNodes[childIndex].Attributes[1]) {
+			if (rootNode.ChildNodes[childIndex].Attributes[0].Value == "object") {
+				switch (rootNode.ChildNodes[childIndex].Attributes[1].Value) {
 					case "switch":
 						geometry.type = GeometryType.Switch;
 						break; 
@@ -190,30 +200,31 @@ public class Map {
 						break; 
 				}
 
-				int tileNumber = int.Parse(rootNode.ChildNodes[childIndex].Attributes[2]); 
+				int tileNumber = int.Parse(rootNode.ChildNodes[childIndex].Attributes[2].Value); 
 				geometry.column = tileNumber % Constants.tileCountRow; 
 				geometry.row = tileNumber / Constants.tileCountRow; 
-				geometry.length = int.Parse(rootNode.ChildNodes[childIndex].Attributes[3]); 
-				geometry.height = int.Parse(rootNode.ChildNodes[childIndex].Attributes[4]); 
+				geometry.length = int.Parse(rootNode.ChildNodes[childIndex].Attributes[3].Value); 
+				geometry.height = int.Parse(rootNode.ChildNodes[childIndex].Attributes[4].Value); 
 			}
 
 			curGeometry.Add(geometry); 
 		}
+
+		Logger.Log(GameSystems.Renderer, $"geometry for {source} is loaded"); 
 	}
 
 	void renderGeometry() {
 		for (int geometryIndex = 0; geometryIndex < curGeometry.Count; geometryIndex++) {
-			if (curGeometry[geometryIndex].type == GameSystems.Platform) {
-				DrawRectangle(curGeometry[geometryIndex].column * Utils.screenWidth/Constants.tileCountRow; 
+			if (curGeometry[geometryIndex].type == GeometryType.Platform) {
+				DrawRectangle(curGeometry[geometryIndex].column * Utils.screenWidth/Constants.tileCountRow,
 				curGeometry[geometryIndex].row * Utils.screenHeight/Constants.tileCountColumn, 
-				curGeometry[geometryIndex].length, curGeometry[geometryIndex].height, Color.Red); 
-				Logger.Log(GameSystems.Renderer, "platform geometry collision rectangle drawn"); 
+				curGeometry[geometryIndex].length * Utils.screenWidth/Constants.tileCountRow, 
+				curGeometry[geometryIndex].height * Utils.screenHeight/Constants.tileCountColumn, Color.Red); 
 
 			} else {
 				DrawRectangle(curGeometry[geometryIndex].column * Utils.screenWidth/Constants.tileCountRow, 
 				(curGeometry[geometryIndex].row * Utils.screenHeight/Constants.tileCountColumn) + Utils.screenHeight/Constants.tileCountColumn - curGeometry[geometryIndex].height,
 				curGeometry[geometryIndex].length, curGeometry[geometryIndex].height, Color.Red);
-				Logger.Log(GameSystems.Renderer, "object geometry collision rectangle drawn"); 
 			}
 		}
 	}

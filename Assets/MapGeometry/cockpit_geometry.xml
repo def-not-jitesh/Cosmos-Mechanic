@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-// 3rd row, 34th tile, length=20, height=2 (platform)
-// 10th row, 57th tile, length and height depend on image (switch)
-// 18th row, 19th tile, length=17, height=2 (platform)
-// 32nd row, 1st tile, length=19, height=2 (platform)
-// 32nd row, 44th tile, length=7, height=2 (platform)
-// 32nd row, 51st tile, length and height depend on image (door)
+<!-- 3rd row, 34th tile, length=20, height=2 (platform) -->
+<!-- 10th row, 57th tile, length and height depend on image (switch) -->
+<!-- 18th row, 19th tile, length=17, height=2 (platform) -->
+<!-- 32nd row, 1st tile, length=19, height=2 (platform) -->
+<!-- 32nd row, 44th tile, length=7, height=2 (platform) -->
+<!-- 32nd row, 51st tile, length and height depend on image (door) -->
 
 <map> 
-    <geometry type="platform" tile="155" length=20 height=2/>
-    <geometry type="platform" tile="1040" length=17 height=2/>
-    <geometry type="platform" tile="1862" length=19 height=2/>
-    <geometry type="platform" tile="1905" length=7 height=2/>
-    <geometry type="object" objectType="switch" tile="598"/>
-    <geometry type="object" objectType="door" tile="1911"/>
+    <geometry type="platform" tile="154" length="20" height="2"/>
+    <geometry type="platform" tile="1039" length="17" height="2"/>
+    <geometry type="platform" tile="1861" length="19" height="2"/>
+    <geometry type="platform" tile="1904" length="7" height="2"/>
+    <geometry type="object" objectType="switch" tile="597" length="72" height="257"/>
+    <geometry type="object" objectType="door" tile="1911" length="280" height="464"/>
 </map> 

@@ -17,14 +17,14 @@ public class CosmosMechanic {
 
 		// initialize objects 
 		Utils.init(); 
-		Logger.Enable(GameSystems.Player); 
+		// Logger.Enable(GameSystems.Player); 
+		Logger.Enable(GameSystems.Renderer);
 		Player player = new Player(); 
 		Map map = new Map(); 
 		map.LoadMap(Constants.Room.cockpit);
 
 		// subscribe to events 
 		InputHandler.InputEvent += player.onInput; 
-		
 		
 		while (!WindowShouldClose() && !player.isDead) {
 			float deltaTime = GetFrameTime();
